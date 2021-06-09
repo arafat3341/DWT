@@ -13,6 +13,7 @@ app.use(express.urlencoded({extended:true}));
 app.use('',users);
 
 // ----------- server config --------------------
-app.listen(port, () =>{
-    console.log("server is running");
-});
+app.listen(4000);
+// app.listen(port, () =>{
+//     console.log("server is running");
+// });
