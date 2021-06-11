@@ -1,18 +1,13 @@
 const mysql = require("mysql");
-// ------------- mysql database connection --------------
-const db3 = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password  : '',
-    database : 'dwt'
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'datenbanken'
 });
 
-db3.connect(function(err) {
-    if (err) {
-      console.error('error connecting3');
-      return;
-    }
-    console.log('connected3');
-  });
-
-module.exports.conn = db3;
+db.connect()
+{
+    console.log("conected");
+};
+module.exports.conn = db;
