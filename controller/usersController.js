@@ -1,8 +1,12 @@
 const dbconfig = require("../config");
+const express = require("express");
 const { request, response } = require("express");
-
+const app = express();
+const cors = require("cors");
+app.use(cors());
+app.use(express.json());
 exports.all_users = (request, response) => {
-    dbconfig.conn.query(
+    dbconfig.query(
         'SELECT * FROM `users`',
         function (err, results, fields) {
             response.send(results); // results contains rows returned by server
@@ -10,7 +14,7 @@ exports.all_users = (request, response) => {
     );
 };
 exports.login = (request, response) => {
-    const arr1 = dbconfig.conn.query(
+    const arr1 = dbconfig.query(
         'SELECT * FROM `users`',
         function (err, results, fields) {
             console
@@ -39,6 +43,24 @@ exports.login = (request, response) => {
     );
 
 }
+    exports.addUser = (req,res) => {
+        const sql = "INSERT INTO users set ?"
+        const data = {
+            user_name : req.body.user_name,
+            password : req.body.password,
+            first_name : req.body.first_name,
+            last_name : req.body.last_name,
+            user_type : req.body.user_type,
+            created_at : new Date()
+        }
+        dbconfig.query(sql, data, (err, result) => {
+            if (err) throw err;
+            console.log("1 record inserted");
+        });
+    console.log(data)
+    //res.json(data)
+    res.redirect("/api/v1.1/all_users");
+    }
 
 function addUser(firstName, lastName, userType, password, userName) {
     const query = `INSERT INTO 'users' 
