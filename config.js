@@ -3,8 +3,8 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
-    database: 'datenbanken'
-    //database: 'dwt'
+    //database: 'datenbanken'
+    database: 'dwt'
 });
 
 db.connect()
