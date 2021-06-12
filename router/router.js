@@ -14,7 +14,7 @@ router.get("/home", (err, res) => {
 router.get("/api/v1.1/all_users", userController.all_users);
 router.post("/users", userController.addUser);
 router.get("/login", userController.login);
-
+router.post("/login", userController.login);
 router.get("/api/v1/all_subjects", subjectController.all_subject);
 
 module.exports = router;

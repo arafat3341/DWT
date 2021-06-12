@@ -1,8 +1,10 @@
 const dbconfig = require("../config");
 const express = require("express");
-const { request, response } = require("express");
+const { request, response, json } = require("express");
 const app = express();
 const cors = require("cors");
+const fetch = require("node-fetch");
+
 app.use(cors());
 app.use(express.json());
 exports.all_users = (request, response) => {
@@ -17,12 +19,11 @@ exports.login = (request, response) => {
     const arr1 = dbconfig.query(
         'SELECT * FROM `users`',
         function (err, results, fields) {
-            console
             response.send(results); // results contains rows returned by server
             console.log(results);
             results.forEach(element => {
                 //console.log(element.user_name);
-                if (element.user_name == 'sana') {
+                if (element.user_name == req.body.user_name) {
                     switch (element.user_type) {
                         case 'admin':
                             console.log('logged in as a admin');
@@ -97,13 +98,22 @@ function deleteUser(userID) {
 }
 
 
+// var userData = (data) => fetch('http://localhost:5000/api/v1.1/all_users')
+//     .then(res => res.json()
+//     .then(json => data = json).catch(
+//         err => console.error(err))
+// );
+// userData.forEach(obj => {
+//     console.log(obj.last_name)
+// })
 
-// const response = await fetch('http://localhost:5000/api/v1.1/all_users');
-// const data = await response.json();
 
-// data.forEach(obj => {
-//     Object.entries(obj).forEach(([key, value]) => {
-//         console.log(`${key} ${value}`);
-//     });
-//     console.log('-------------------');
-// });
+async function getWeather() {
+    let response = await fetch('http://localhost:5000/api/v1.1/all_users');
+    let result = await response.json();
+    //return console.log(result);
+    result.forEach(obj => {
+        console.log(obj.user_name)
+    })
+}
+getWeather();
