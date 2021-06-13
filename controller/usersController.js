@@ -1,12 +1,14 @@
 const dbconfig = require("../config");
 const express = require("express");
-const { request, response, json } = require("express");
 const app = express();
 const cors = require("cors");
 const fetch = require("node-fetch");
+const bcrypt = require("bcrypt")
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 exports.all_users = (request, response) => {
     dbconfig.query(
         'SELECT * FROM `users`',
@@ -15,40 +17,50 @@ exports.all_users = (request, response) => {
         }
     );
 };
-exports.login = (request, response) => {
-    const arr1 = dbconfig.query(
-        'SELECT * FROM `users`',
-        function (err, results, fields) {
-            response.send(results); // results contains rows returned by server
-            console.log(results);
-            results.forEach(element => {
-                //console.log(element.user_name);
-                if (element.user_name == req.body.user_name) {
-                    switch (element.user_type) {
-                        case 'admin':
-                            console.log('logged in as a admin');
 
-                            break;
-                        case 'teacher':
-                            console.log('logged in as a teacher');
-                            break;
-                        case 'student':
-                            console.log('logged in as a student');
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            });
+exports.login = async (req,res) => {
+    let response = await fetch('http://localhost:5000/api/v1.1/all_users');
+    let result = await response.json();
+    let isMatchedUser = false;
+    let storeUserType;
+    let storePassword;
+    result.forEach(obj => {
+        if (obj.user_name == req.body.user_name) {
+            isMatchedUser = true;
+            storeUserType = obj.user_type;
+            storePassword = obj.password;
         }
-    );
-
+    })
+    
+    if (isMatchedUser == true && await await bcrypt.compare(req.body.password, storePassword)) {
+        switch (storeUserType) {
+            case 'admin':
+                console.log('logged in as a admin');
+                res.json('logged in as a admin')
+                break;
+            case 'teacher':
+                console.log('logged in as a teacher');
+                res.json('logged in as a teacher')
+                break;
+            case 'student':
+                console.log('logged in as a student');
+                res.json('logged in as a student')
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        console.log('Auth failed');
+        res.status(401).json('Auth failed')
+    }
 }
-    exports.addUser = (req,res) => {
-        const sql = "INSERT INTO users set ?"
+    exports.addUser = async (req,res) => {
+        const sql = "INSERT INTO users set ?";
+        const hash2 = await bcrypt.hash(req.body.password, 10);
         const data = {
             user_name : req.body.user_name,
-            password : req.body.password,
+            password : hash2,
             first_name : req.body.first_name,
             last_name : req.body.last_name,
             user_type : req.body.user_type,
@@ -96,24 +108,3 @@ function deleteUser(userID) {
         }
     }
 }
-
-
-// var userData = (data) => fetch('http://localhost:5000/api/v1.1/all_users')
-//     .then(res => res.json()
-//     .then(json => data = json).catch(
-//         err => console.error(err))
-// );
-// userData.forEach(obj => {
-//     console.log(obj.last_name)
-// })
-
-
-async function getWeather() {
-    let response = await fetch('http://localhost:5000/api/v1.1/all_users');
-    let result = await response.json();
-    //return console.log(result);
-    result.forEach(obj => {
-        console.log(obj.user_name)
-    })
-}
-getWeather();
