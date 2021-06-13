@@ -9,11 +9,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-exports.all_users = (request, response) => {
+exports.all_users = (req, res) => {
     dbconfig.query(
         'SELECT * FROM `users`',
         function (err, results, fields) {
-            response.send(results); // results contains rows returned by server
+            res.send(results); // results contains rows returned by server
         }
     );
 };
@@ -75,10 +75,10 @@ exports.login = async (req,res) => {
     res.redirect("/api/v1.1/all_users");
     }
 
-function addUser(firstName, lastName, userType, password, userName) {
-    const query = `INSERT INTO 'users' 
-    VALUES ('user_name','password','first_name','last_name','user_type','created_at')`;
-}
+// function addUser(firstName, lastName, userType, password, userName) {
+//     const query = `INSERT INTO 'users' 
+//     VALUES ('user_name','password','first_name','last_name','user_type','created_at')`;
+// }
 function editUser(firstName, lastName, password, userID) {
     const query = `UPDATE users 
     SET 'user_name'='[value-2]',

@@ -1,14 +1,20 @@
 const express = require("express");
 const app = express();
 const port = 5000;
-const router = require("./router/router");
+const userRouter = require("./router/user");
+const subjectRouter = require("./router/subject");
+const classRouter = require("./router/class");
+const testRouter = require("./router/test");
 const cors = require("cors");
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('', router);
+app.use('', userRouter);
+app.use('', subjectRouter);
+app.use('', classRouter);
+app.use('', testRouter);
 
 app.listen(port, (err) => {
     if(err) {
