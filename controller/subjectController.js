@@ -1,11 +1,10 @@
 const dbconfig = require("../config");
-const { request, response } = require("express");
 
-exports.all_subject = (request, response) => {
+exports.all_subject = (req, res) => {
     dbconfig.query(
         'SELECT * FROM `subject`',
         function (err, results, fields) {
-            response.send(results); // results contains rows returned by server
+            res.send(results); // results contains rows returned by server
         }
     );
 };
