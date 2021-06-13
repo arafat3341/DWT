@@ -7,8 +7,6 @@ const db = mysql.createConnection({
     database: 'dwt'
 });
 
-db.connect()
-{
-    console.log("conected");
-};
+db.connect(console.log("conected"))
+
 module.exports = db;

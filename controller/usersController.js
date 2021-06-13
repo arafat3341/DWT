@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const fetch = require("node-fetch");
-const bcrypt = require("bcrypt")
+const bcrypt = require("bcrypt");
 
 app.use(cors());
 app.use(express.json());
@@ -32,7 +32,7 @@ exports.login = async (req,res) => {
         }
     })
     
-    if (isMatchedUser == true && await await bcrypt.compare(req.body.password, storePassword)) {
+    if (isMatchedUser == true && await bcrypt.compare(req.body.password, storePassword)) {
         switch (storeUserType) {
             case 'admin':
                 console.log('logged in as a admin');
