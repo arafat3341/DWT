@@ -8,7 +8,7 @@ const bcrypt = require("bcrypt");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+    
 exports.all_users = (req, res) => {
     dbconfig.query(
         'SELECT * FROM `users`',
@@ -81,10 +81,10 @@ exports.login = async (req,res) => {
 // }
 function editUser(firstName, lastName, password, userID) {
     const query = `UPDATE users 
-    SET 'user_name'='[value-2]',
-    'password'='[value-3]',
-    'first_name'='[value-4]',
-    'last_name'='[value-5]', WHERE 'user_id'='[value-1]'`;
+    SET 'user_name'=?,
+    'password'=?,
+    'first_name'=?,
+    'last_name'=?, WHERE 'user_id'=?`;
 }
 function deleteUser(userID) {
 
