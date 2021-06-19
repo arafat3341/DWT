@@ -23,6 +23,7 @@ router.delete("/users/:Id", userController.delete_user)
 router.get("/users/assignList/:Id", userController.list_of_assign_student)
 router.get("/users/assignAvailableList/:Id", userController.list_of_assign_available_student)
 router.post("/users/assignStudent/:Id", userController.assign_student_a_class)
+router.post("/users/studentView/:Id", userController.student_view)
 
 router.get("/api/v1/all_subjects", subjectController.all_subject);
 

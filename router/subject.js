@@ -7,6 +7,7 @@ const subjectController = require("../controller/subjectController");
 
 app.use(express.urlencoded({ extended: true }));
 
-router.get("/api/v1/all_subjects", subjectController.all_subject);
+router.get("/all_subjects", subjectController.all_subject);
+router.post("/singleSubject/:Id", subjectController.single_subject);
 
 module.exports = router;
