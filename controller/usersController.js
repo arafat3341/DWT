@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-    
+
 exports.all_users = (req, res) => {
     dbconfig.query(
         'SELECT * FROM `users`',
@@ -23,8 +23,8 @@ let setUserId = [];
 let setUserType = [];
 let isMatchedUser = false;
 let storePassword;
-let incoming_password; 
-exports.login = async (req,res) => {
+let incoming_password;
+exports.login = async (req, res) => {
     let response = await fetch('http://localhost:5000/api/v1.1/all_users');
     let result = await response.json();
     result.forEach(obj => {
@@ -43,53 +43,53 @@ exports.login = async (req,res) => {
     console.log(storePassword)
     res.sendStatus(200)
 }
-    exports.getLogin = async (req, res) => {
-        //res.send(200).json("user name:" + setUserId ) 
-        //res.send(setUserId)
-        if (isMatchedUser == true && await bcrypt.compare(incoming_password, storePassword)) {
-            switch (setUserType) {
-                case 'admin':
-                    console.log('logged in as a admin');
-                    res.json('logged in as a admin')
-                    break;
-                case 'teacher':
-                    console.log('logged in as a teacher');
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    res.write(JSON.stringify(await getUserId));
-                    res.end();
-                    break;
-                case 'student':
-                    console.log('logged in as a student');
-                    res.json('logged in as a student')
-                    break;
-                default:
-                    break;
-            }
-        }
-        else {
-            console.log('Auth failed');
-            res.status(401).json('Auth failed')
+exports.getLogin = async (req, res) => {
+    //res.send(200).json("user name:" + setUserId ) 
+    //res.send(setUserId)
+    if (isMatchedUser == true && await bcrypt.compare(incoming_password, storePassword)) {
+        switch (setUserType) {
+            case 'admin':
+                console.log('logged in as a admin');
+                res.json('logged in as a admin')
+                break;
+            case 'teacher':
+                console.log('logged in as a teacher');
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.write(JSON.stringify(await getUserId));
+                res.end();
+                break;
+            case 'student':
+                console.log('logged in as a student');
+                res.json('logged in as a student')
+                break;
+            default:
+                break;
         }
     }
-    exports.addUser = async (req,res) => {
-        const sql = "INSERT INTO users set ?";
-        const hash2 = await bcrypt.hash(req.body.password, 10);
-        const data = {
-            user_name : req.body.user_name,
-            password : hash2,
-            first_name : req.body.first_name,
-            last_name : req.body.last_name,
-            user_type : req.body.user_type,
-            created_at : new Date()
-        }
-        dbconfig.query(sql, data, (err, result) => {
-            if (err) throw err;
-            console.log("1 record inserted");
-        });
+    else {
+        console.log('Auth failed');
+        res.status(401).json('Auth failed')
+    }
+}
+exports.addUser = async (req, res) => {
+    const sql = "INSERT INTO users set ?";
+    const hash2 = await bcrypt.hash(req.body.password, 10);
+    const data = {
+        user_name: req.body.user_name,
+        password: hash2,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        user_type: req.body.user_type,
+        created_at: new Date()
+    }
+    dbconfig.query(sql, data, (err, result) => {
+        if (err) throw err;
+        console.log("1 record inserted");
+    });
     console.log(data)
     //res.json(data)
     res.redirect("/api/v1.1/all_users");
-    }
+}
 function editUser(firstName, lastName, password, userID) {
     const query = `UPDATE users 
     SET 'user_name'=?,
@@ -120,7 +120,7 @@ function deleteUser(userID) {
     }
 }
 
-exports.edit_user = (req,res)=>{
+exports.edit_user = (req, res) => {
     const userId = req.params.Id;
     dbconfig.query(
         'SELECT * FROM `users` where user_id = ?', userId,
@@ -129,7 +129,7 @@ exports.edit_user = (req,res)=>{
         }
     );
 }
-exports.update_user = (req,res)=>{
+exports.update_user = (req, res) => {
     const userId = req.params.Id;
     const user_name = req.body.user_name;
     const first_name = req.body.first_name;
@@ -143,7 +143,7 @@ exports.update_user = (req,res)=>{
     });
     res.redirect("/api/v1.1/all_users");
 }
-exports.delete_user = (req,res) => {
+exports.delete_user = (req, res) => {
     const userId = req.params.Id;
     let userType;
     let isEmpty = false;
@@ -183,10 +183,10 @@ exports.delete_user = (req,res) => {
                 DELETE FROM assign_pupil WHERE user_id = ? ,
                 DELETE FROM users WHERE user_id = ?`;
                 dbconfig.query(
-                    sql2,userId,userId,userId,userId,
+                    sql2, userId, userId, userId, userId,
                     function (err, results, fields) {
                         if (err) throw err;
-                            console.log("1 record is deleted");
+                        console.log("1 record is deleted");
                     }
                 );
                 res.redirect("/api/v1.1/all_users");
@@ -197,27 +197,27 @@ exports.delete_user = (req,res) => {
             }
         }
     );
-    
-    
+
+
 }
 
-exports.list_of_assign_student = async (req,res) => {
+exports.list_of_assign_student = async (req, res) => {
     const userId = req.params.Id;
     let incoming_id = 0;
     console.log(userId)
-    let response = await fetch('http://localhost:5000/users/'+userId);
+    let response = await fetch('http://localhost:5000/users/' + userId);
     let result = await response.json();
-    
+
     result.forEach(obj => {
         incoming_id = obj.user_id;
     })
 
     if (incoming_id == userId) {
         switch (result[0].user_type) {
-            case 'admin' :
+            case 'admin':
                 res.json('admin')
                 break;
-            case 'student' :
+            case 'student':
                 //res.json('student')
                 //'SELECT u.user_id FROM assigned_pupil ap INNER join users u on ap.user_id = u.user_id WHERE u.user_id = ?'
                 dbconfig.query(
@@ -227,7 +227,7 @@ exports.list_of_assign_student = async (req,res) => {
                     }
                 );
                 break;
-            case 'teacher' :
+            case 'teacher':
                 res.json('teacher')
                 break;
         }
@@ -236,34 +236,34 @@ exports.list_of_assign_student = async (req,res) => {
         res.json('not matched')
     }
 }
-exports.list_of_assign_available_student = async (req,res) => {
+exports.list_of_assign_available_student = async (req, res) => {
     const userId = req.params.Id;
     let incoming_id = 0;
     console.log(userId)
-    let response = await fetch('http://localhost:5000/users/'+userId);
+    let response = await fetch('http://localhost:5000/users/' + userId);
     let result = await response.json();
-    
+
     result.forEach(obj => {
         incoming_id = obj.user_id;
     })
 
     if (incoming_id == userId) {
         switch (result[0].user_type) {
-            case 'admin' :
+            case 'admin':
                 res.json('admin')
                 break;
-            case 'student' :
+            case 'student':
                 //res.json('student')
                 let assignedClass = 0;
                 dbconfig.query(
-                    'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?',userId,
+                    'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?', userId,
                     function (err, results, fields) {
-                        results.forEach(obj=>{
+                        results.forEach(obj => {
                             assignedClass = obj.class_id
                         })
                         console.log(assignedClass)
                         dbconfig.query(
-                            'SELECT * from class where not class_id = ?',assignedClass,
+                            'SELECT * from class where not class_id = ?', assignedClass,
                             function (err, results, fields) {
                                 res.send(results)
                             }
@@ -271,7 +271,7 @@ exports.list_of_assign_available_student = async (req,res) => {
                     }
                 );
                 break;
-            case 'teacher' :
+            case 'teacher':
                 res.json('teacher')
                 break;
         }
@@ -281,11 +281,56 @@ exports.list_of_assign_available_student = async (req,res) => {
     }
 }
 
-exports.assign_student_a_class = async (req,res) => {
+exports.assign_student_a_class = async (req, res) => {
     const userId = req.params.Id;
     let incoming_id = 0;
+    let classID = 1; //req.body.class_id
     console.log(userId)
-    let response = await fetch('http://localhost:5000/users/'+userId);
+    let response = await fetch('http://localhost:5000/users/' + userId);
     let result = await response.json();
-    res.send(result)
+    switch (result[0].user_type) {
+        case 'student':
+            let assignedClass = 0;
+            dbconfig.query(
+                'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?', userId,
+                function (err, results, fields) {
+                    results.forEach(obj => {
+                        assignedClass = obj.class_id
+                    })
+                    console.log(assignedClass)
+                    if (assignedClass == "") {
+                        dbconfig.query(
+                            'INSERT INTO `assigned_pupil`(`class_id`, `user_id`) VALUES ( ?, ?)', [assignedClass, userId],
+                            function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is Inserted");
+                            }
+                        );
+                        res.redirect("/api/v1/classes/");
+                    }
+                    else {
+                        dbconfig.query(
+                            'DELETE FROM `assigned_pupil` where class_id = ?',
+                            'INSERT INTO `assigned_pupil`(`class_id`, `user_id`) VALUES ( ?, ?)', [assignedClass, assignedClass, userId],
+                            function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is inserted");
+                            }
+                        );
+                        res.redirect("/api/v1/classes/");
+                    }
+                }
+            );
+
+            break;
+        case 'admin':
+
+            break;
+        case 'teacher':
+
+            break;
+        default:
+            break;
+    }
+
 }
