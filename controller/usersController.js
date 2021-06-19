@@ -25,7 +25,7 @@ let isMatchedUser = false;
 let storePassword;
 let incoming_password;
 exports.login = async (req, res) => {
-    let response = await fetch('http://localhost:5000/api/v1.1/all_users');
+    let response = await fetch('http://localhost:5000/users');
     let result = await response.json();
     result.forEach(obj => {
         if (obj.user_name == req.body.user_name) {
@@ -129,19 +129,47 @@ exports.edit_user = (req, res) => {
         }
     );
 }
-exports.update_user = (req, res) => {
+exports.update_user = async (req, res) => {
     const userId = req.params.Id;
     const user_name = req.body.user_name;
     const first_name = req.body.first_name;
     const last_name = req.body.last_name;
     const user_type = req.body.user_type;
-
-    const sql = 'update users set user_name = ?, first_name = ?, last_name = ?, user_type = ?  where user_id = ?'
-    dbconfig.query(sql, [user_name, first_name, last_name, user_type, userId], (err, result) => {
-        if (err) throw err;
-        console.log("1 record updated");
-    });
-    res.redirect("/api/v1.1/all_users");
+    let response = await fetch('http://localhost:5000/users');
+    let result = await response.json();
+    let userType;
+    result.forEach (obj => {
+        userType = obj.user_type
+    })
+    switch (userType) {
+        case 'student':
+            const sql = 'update users set user_name = ?, first_name = ?, last_name = ?  where user_id = ?'
+                dbconfig.query(sql, [user_name, first_name, last_name, userId], (err, result) => {
+                    if (err) throw err;
+                    console.log("1 record updated");
+                });
+            res.redirect("/api/v1.1/all_users");
+            break;
+        case 'teacher':
+            const sql2 = 'update users set user_name = ?, first_name = ?, last_name = ?  where user_id = ?'
+                dbconfig.query(sql2, [user_name, first_name, last_name, userId], (err, result) => {
+                    if (err) throw err;
+                    console.log("1 record updated");
+                });
+            res.redirect("/api/v1.1/all_users");
+            break;
+        case 'admin':
+            const sql3 = 'update users set user_name = ?, first_name = ?, last_name = ?, user_type = ?  where user_id = ?'
+                dbconfig.query(sql3, [user_name, first_name, last_name, user_type, userId], (err, result) => {
+                    if (err) throw err;
+                    console.log("1 record updated");
+                });
+            res.redirect("/api/v1.1/all_users");
+            break;
+        default:
+            break;
+    }
+    
 }
 exports.delete_user = (req, res) => {
     const userId = req.params.Id;
