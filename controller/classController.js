@@ -23,8 +23,10 @@ exports.create_class = (req,res)=>{
         class_name : req.body.class_name,
         is_archived: req.body.is_archived,
     }
-    dbconfig.query(sql, data, (err, result) => {
-        if (err) throw err;
+    dbconfig.query(sql, data, (err, result, next) => {
+        if (err) {
+            throw err
+        };
         console.log("1 record inserted");
     });
     console.log(data)
@@ -67,10 +69,6 @@ exports.delete_class = (req,res)=>{
     const classId = req.params.Id;
     let response = await fetch('http://localhost:5000/api/v1/classes/'+ classId);
     let result = await response.json();
-    // let classRows = await db.query( 'SELECT * FROM class WHERE class_id = 1' );
-    // let usersRow = await db.query( 'SELECT * FROM users' );
-    result.forEach(element => {
-        console.log(element.class_name)
-    });
-    res.json(result[0])
+    res.json(result[0].class_name)
 }
+
