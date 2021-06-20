@@ -65,6 +65,7 @@ exports.delete_class = (req,res)=>{
     );
     res.redirect("/api/v1/classes/");
 }
+
  exports.doSomething = async (req,res) => {
     const classId = req.params.Id;
     let response = await fetch('http://localhost:5000/api/v1/classes/'+ classId);
