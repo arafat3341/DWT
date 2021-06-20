@@ -35,7 +35,7 @@ exports.user_subjects = (req,res)=>{
 exports.user_subjects_test_mean = (req,res)=>{
     const userId = req.params.Id;
     dbconfig.query(
-        'SELECT AVG(t.grade) from subject s INNER JOIN class c on c.class_id = s.class_id INNER JOIN test t on t.subject_id = s.subject_id INNER JOIN assigned_pupil ap on ap.class_id = s.class_id where ap.user_id = ?', userId,
+        'SELECT AVG(m.marks) from mark m where user_id = ?', userId,
         function (err, results, fields) {
             if (err) throw err;
             res.send(results);

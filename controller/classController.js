@@ -57,10 +57,35 @@ exports.update_class = (req,res)=>{
 exports.delete_class = (req,res)=>{
     const classId = req.params.Id;
     dbconfig.query(
-        'delete FROM `class` where class_id = ?', classId,
-        function (err, results, fields) {
-            if (err) throw err;
-            console.log("1 record is deleted");
+        'DELETE FROM `assigned_pupil` where class_id = ?', classId,
+            function (err, results, fields) {
+                if (err) throw err;
+                console.log("1 record is deleted");
+                dbconfig.query (
+                    'update class set is_archived = ? where class_id = ?', [0, classId], function (err, results, fields) {
+                        if (err) throw err;
+                        console.log("1 record is updated");
+                        dbconfig.query (
+                            'select subject_id from subject where class_id = ?', classId, function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is updated");
+                                let subjectId = 0;
+                                results.forEach(element => {
+                                    subjectId = element.subject_id
+                                    dbconfig.query (
+                                        'update subject set is_archived = ? where subject_id = ?', [0, subjectId], function (err, results, fields) {
+                                            if (err) throw err;
+                                            console.log("1 record is updated");
+                                        }
+                                    )
+                                    console.log("subject id : "+subjectId);
+                                });
+                                // res.redirect('/api/v1/classes/')
+                                console.log(results);
+                            }
+                        )
+                    }
+                )
         }
     );
     res.redirect("/api/v1/classes/");
@@ -72,4 +97,3 @@ exports.delete_class = (req,res)=>{
     let result = await response.json();
     res.json(result[0].class_name)
 }
-

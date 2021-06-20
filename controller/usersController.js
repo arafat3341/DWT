@@ -397,13 +397,13 @@ exports.deassign_student_a_class = async (req, res) => {
                     })
                     console.log("assigned class id: " + assignedClass)
                     if (assignedClass == 0) {
-                        dbconfig.query(
-                            'INSERT INTO assigned_pupil set ?', data,
-                            function (err, results, fields) {
-                                if (err) throw err;
-                                console.log("1 record is Inserted");
-                            }
-                        );
+                        // dbconfig.query(
+                        //     'INSERT INTO assigned_pupil set ?', data,
+                        //     function (err, results, fields) {
+                        //         if (err) throw err;
+                        //         console.log("1 record is Inserted");
+                        //     }
+                        // );
                         res.redirect("/api/v1/classes/");
                     }
                     else {
