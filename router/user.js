@@ -35,6 +35,18 @@ router.post("/users/archive_subject/:Id/:subject_id", userController.archiveSubj
 router.post("/users/delete_subject/:Id/:subject_id", userController.deleteSubject);
 router.get("/users/edit_subject/:Id/:subject_id", userController.showSubjectInfo);
 
+// route added 6/22
+router.get("/users/list_student_subject/:Id/:subject_id", userController.list_student_subject);
+router.post("/users/add_test/:Id/:subject_id", userController.add_test);
+router.put("/users/edit_test/:Id", userController.edit_test);
+
+router.get("/users/list_test_subject/:Id/:subject_id", userController.list_test_subject);
+router.get("/users/list_student_test/:Id/:test_id", userController.list_student_test);
+
+router.put("/users/edit_grade_pupil/:Id", userController.edit_grade_pupil);
+router.get("/users/upload_csv_grade_pupil/:Id/:file", userController.upload_csv_grade_pupil);
+router.delete("/users/deleteTest/:Id", userController.deleteTest);
+
 
 
 module.exports = router;
