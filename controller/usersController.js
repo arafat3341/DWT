@@ -41,31 +41,26 @@ exports.login = async (req, res) => {
     })
     incoming_password = req.body.password;
     console.log(setUserId)
+    console.log(getUserId)
     console.log(setUserType)
     console.log(isMatchedUser)
     console.log(storePassword)
-    res.sendStatus(200)
-}
-exports.getLogin = async (req, res) => {
-    //res.send(200).json("user name:" + setUserId ) 
-    //res.send(setUserId)
-    if (isMatchedUser == true && await bcrypt.compare(incoming_password, storePassword)) {
+    if (isMatchedUser == true && bcrypt.compare(incoming_password, storePassword)) {
         switch (setUserType) {
             case 'admin':
                 console.log('logged in as a admin');
-                res.json('logged in as a admin')
+                res.redirect('http://localhost/api/admin.php')
                 break;
             case 'teacher':
                 console.log('logged in as a teacher');
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.write(JSON.stringify(await getUserId));
-                res.end();
+                res.redirect('http://localhost/api/teacher.php')
                 break;
             case 'student':
                 console.log('logged in as a student');
-                res.json('logged in as a student')
+                res.redirect('http://localhost/api/student.php')
                 break;
             default:
+                res.redirect('http://localhost/api/admin.php')
                 break;
         }
     }
@@ -73,6 +68,14 @@ exports.getLogin = async (req, res) => {
         console.log('Auth failed');
         res.status(401).json('Auth failed')
     }
+    //res.redirect('/login');
+}
+exports.getLogin = (req, res) => {
+    //res.json("user id:" + getUserId ) 
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.write(JSON.stringify(getUserId));
+    //getUserId = 0;
+    res.end();
 }
 exports.addUser = async (req, res) => {
     const sql = "INSERT INTO users set ?";
@@ -602,7 +605,7 @@ exports.student_view = async (req, res) => {
     switch (userType) {
         case 'student':
             dbconfig.query(
-                'SELECT * from class c INNER join assigned_pupil ap on c.class_id = ap.class_id INNER JOIN subject s on s.class_id = ap.class_id where ap.user_id = ?', userId,
+                'SELECT * from assigned_pupil ap INNER JOIN subject s on s.subject_id = ap.subject_id where ap.user_id = ?', userId,
                 function (err, results, fields) {
                     res.send(results); // results contains rows returned by server
                 }
