@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('', userRouter);
 app.use('', subjectRouter);
-app.use('/api/v1/classes', classRouter);
+app.use('', classRouter);
 app.use('', testRouter);
 
 app.listen(port, (err) => {

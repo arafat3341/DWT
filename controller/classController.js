@@ -62,7 +62,7 @@ exports.delete_class = (req,res)=>{
                 if (err) throw err;
                 console.log("1 record is deleted");
                 dbconfig.query (
-                    'update class set is_archived = ? where class_id = ?', [0, classId], function (err, results, fields) {
+                    'update class set is_archived = ? where class_id = ?', [1, classId], function (err, results, fields) { // is archiveed = 1 means class deleted
                         if (err) throw err;
                         console.log("1 record is updated");
                         dbconfig.query (
@@ -70,15 +70,35 @@ exports.delete_class = (req,res)=>{
                                 if (err) throw err;
                                 console.log("1 record is updated");
                                 let subjectId = 0;
+                                let count = 0;
                                 results.forEach(element => {
                                     subjectId = element.subject_id
+                                    
                                     dbconfig.query (
-                                        'update subject set is_archived = ? where subject_id = ?', [0, subjectId], function (err, results, fields) {
+                                        'select count(*) as count from test where subject_id = ?', subjectId, function (err, results, fields) {
                                             if (err) throw err;
-                                            console.log("1 record is updated");
+                                            console.log('count',results[0].count)
+                                            if (results[0].count == 0) {
+                                                dbconfig.query (
+                                                    'delete from subject where subject_id = ?', subjectId, function (err, results, fields) {
+                                                        if (err) throw err;
+                                                        console.log("1 record is updated");
+                                                    }
+                                                )
+                                                console.log("subject id : "+subjectId);
+                                            }
+                                            else {
+                                                dbconfig.query (
+                                                    'update subject set is_archived = ? where subject_id = ?', [1, subjectId], function (err, results, fields) {
+                                                        if (err) throw err;
+                                                        console.log("1 record is updated");
+                                                    }
+                                                )
+                                                console.log("subject id : "+subjectId);
+                                            }
                                         }
                                     )
-                                    console.log("subject id : "+subjectId);
+                                    
                                 });
                                 // res.redirect('/api/v1/classes/')
                                 console.log(results);
@@ -88,7 +108,7 @@ exports.delete_class = (req,res)=>{
                 )
         }
     );
-    res.redirect("/api/v1/classes/");
+    res.redirect("/classes/");
 }
 
  exports.doSomething = async (req,res) => {

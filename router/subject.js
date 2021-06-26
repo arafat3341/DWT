@@ -12,4 +12,8 @@ router.get("/singleSubject/:userId/:subjectId", subjectController.single_subject
 router.get("/userSubjects/:Id", subjectController.user_subjects);
 router.get("/userSubjectsMeanResults/:Id", subjectController.user_subjects_test_mean);
 
+
+router.get("/users/list_assign_subject/:Id", subjectController.list_assign_subject);
+router.delete("/users/delete_subject/:subject_id", subjectController.deleteSubject);
+router.post("/users/assign_teacher/:subject_id", subjectController.assign_teacher);
 module.exports = router;

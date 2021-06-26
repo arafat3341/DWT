@@ -30,9 +30,9 @@ router.get("/api/v1/all_subjects", subjectController.all_subject);
 
 router.get("/users/sub_list/:Id", userController.list_all_subject);
 //router.post("/users/add_subject/:Id", userController.addEditSubject);
-router.post("/users/add_edit_subject/:Id/:operation_type", userController.addEditSubject);
+router.post("/users/add_edit_subject/:operation_type", userController.addEditSubject);
 router.post("/users/archive_subject/:Id/:subject_id", userController.archiveSubject);
-router.post("/users/delete_subject/:Id/:subject_id", userController.deleteSubject);
+
 router.get("/users/edit_subject/:Id/:subject_id", userController.showSubjectInfo);
 
 // route added 6/22
@@ -44,7 +44,7 @@ router.get("/users/list_test_subject/:Id/:subject_id", userController.list_test_
 router.get("/users/list_student_test/:Id/:test_id", userController.list_student_test);
 
 router.put("/users/edit_grade_pupil/:Id", userController.edit_grade_pupil);
-router.get("/users/upload_csv_grade_pupil/:Id/:file", userController.upload_csv_grade_pupil);
+router.get("/users/upload_csv_grade_pupil/:Id", userController.upload_csv_grade_pupil);
 router.delete("/users/deleteTest/:Id", userController.deleteTest);
 
 

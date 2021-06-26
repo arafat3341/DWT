@@ -203,7 +203,7 @@ exports.delete_user = (req, res) => {
                                     console.log("1 record is deleted");
                                 }
                             );
-                            res.redirect("/api/v1.1/all_users");
+                            res.redirect("/users");
                         }
                         else {
                             res.sendStatus(401)
@@ -211,19 +211,28 @@ exports.delete_user = (req, res) => {
                     }
                 );
             }
-            else if (userType === "student") {
-                const sql2 = `DELETE FROM mark WHERE user_id = ?, 
-                DELETE FROM test WHERE user_id = ? ,
-                DELETE FROM assign_pupil WHERE user_id = ? ,
-                DELETE FROM users WHERE user_id = ?`;
-                dbconfig.query(
-                    sql2, userId, userId, userId, userId,
-                    function (err, results, fields) {
+            else if (userType == "student") {
+                const sql2 = 'DELETE FROM mark WHERE user_id = ?' 
+                const sql3 = 'DELETE FROM test WHERE user_id = ?' // not necessary
+                const sql4 = 'DELETE FROM assigned_pupil WHERE user_id = ?'
+                const sql5 = 'DELETE FROM users WHERE user_id = ?'
+                dbconfig.query(sql2, userId, function (err, results, fields) {
                         if (err) throw err;
                         console.log("1 record is deleted");
+                        dbconfig.query(sql4, userId, function (err, results, fields) {
+                            if (err) throw err;
+                            console.log("1 record is deleted");
+                            dbconfig.query(sql5, userId, function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is deleted");
+                                res.status(200).send("Deleted successfully")
+                            }
+                        );
+                        }
+                    );
                     }
                 );
-                res.redirect("/api/v1.1/all_users");
+                
             }
             else {
                 if (err) throw err;
@@ -318,10 +327,10 @@ exports.list_of_assign_available_student = async (req, res) => {
 exports.assign_student_a_class = async (req, res) => {
     const userId = req.params.Id;
     let incoming_id = 0;
-    let classID = 1; //req.body.class_id
+    let classID = req.body.class_id;
     let data = {
         class_id: classID,
-        user_id: userId
+        user_id: userId // student id
     }
     console.log(userId)
     let response = await fetch('http://localhost:5000/users/' + userId);
@@ -466,12 +475,7 @@ exports.list_all_subject = async (req, res) => {
 }
 
 exports.addEditSubject = async (req, res) => {
-    const userId = req.params.Id;
     const operation_type = req.params.operation_type;
-    let response = await fetch('http://localhost:5000/users/' + userId);
-    let result = await response.json();
-
-    if (result[0].user_type == 'admin') {
         let lastInsertedID = 0;
         switch (operation_type) {
             case 'addSubject':
@@ -510,7 +514,7 @@ exports.addEditSubject = async (req, res) => {
                     console.log("1 record updated");
                 });
 
-                let qry = `UPDATE assign_teacher SET user_id = ?  where subject_id = ?`
+                let qry = `UPDATE assign_teacher SET user_id = ?  where subject_id = ?` // not nessessary
                 dbconfig.query(qry, [req.body.teacher_id, req.body.subject_id], function (err, data) {
                     if (err) throw err;
                     console.log("1 record inserted for assign_teacher");
@@ -519,7 +523,6 @@ exports.addEditSubject = async (req, res) => {
             default:
                 break;
         }
-    }
 }
 exports.showSubjectInfo = async (req, res) => {
     const userId = req.params.Id;
@@ -534,34 +537,6 @@ exports.showSubjectInfo = async (req, res) => {
             'SELECT s.subject_id, s.subject_name, s.is_archived,s.class_id, c.class_name, ast.user_id, u.user_name FROM subject s INNER JOIN class c ON s.class_id = c.class_id INNER JOIN assign_teacher ast ON s.subject_id = ast.subject_id INNER JOIN users u ON ast.user_id = u.user_id WHERE s.subject_id = ?', subjectId,
             function (err, results, fields) {
                 res.send(results); // results contains rows returned by server
-            }
-        );
-    }
-}
-
-exports.deleteSubject = async (req, res) => {
-    const userId = req.params.Id;
-    const subjectId = req.params.subject_id;
-    let response = await fetch('http://localhost:5000/users/' + userId);
-    let result = await response.json();
-    console.log(userId)
-    console.log(subjectId)
-
-    if (result[0].user_type == 'admin') {
-        dbconfig.query(
-            'SELECT count(*) AS testCount FROM test WHERE subject_id = ?', subjectId,
-            function (err, results, fields) {
-                if (err) throw err;
-                console.log(results[0].testCount)
-                if (Number(results[0].testCount) > 0) {
-                    console.log("This subject has records");
-                } else {
-                    const qry = 'DELETE FROM subject where subject_id = ?';
-                    dbconfig.query(qry, [subjectId], (err, result) => {
-                        if (err) throw err;
-                        console.log("1 record deleted");
-                    });
-                }
             }
         );
     }
@@ -595,32 +570,12 @@ exports.archiveSubject = async (req, res) => {
 // ------------------------- end sumon -------------------------------
 exports.student_view = async (req, res) => {
     const userId = req.params.Id;
-    let userType;
-    console.log(userId)
-    let response = await fetch('http://localhost:5000/users/' + userId);
-    let result = await response.json();
-    result.forEach(obj => {
-        userType = obj.user_type
-    })
-    switch (userType) {
-        case 'student':
-            dbconfig.query(
-                'SELECT * from assigned_pupil ap INNER JOIN subject s on s.subject_id = ap.subject_id where ap.user_id = ?', userId,
-                function (err, results, fields) {
-                    res.send(results); // results contains rows returned by server
-                }
-            );
-            break;
-        case 'admin':
-            res.json('admin not allow')
-            break;
-        case 'teacher':
-            res.json('teacher not allow')
-            break;
-        default:
-            res.json('not allow')
-            break;
-    }
+        dbconfig.query(
+            'SELECT * from assigned_pupil ap INNER JOIN subject s on s.subject_id = ap.subject_id where ap.user_id = ?', userId,
+            function (err, results, fields) {
+                res.send(results); // results contains rows returned by server
+            }
+        );
 }
 //SELECT * from class c INNER join assigned_pupil ap on c.class_id = ap.class_id INNER JOIN subject s on s.class_id = ap.class_id INNER JOIN test t on t.subject_id = s.subject_id where ap.user_id = 32
 
@@ -633,8 +588,8 @@ exports.list_student_subject = async (req, res) => {
     let subject_id = req.params.subject_id;
 
     if (result[0].user_type == 'teacher') {
-        const sqlQry = 'SELECT u.user_name, (SELECT AVG(m.marks) from mark m INNER JOIN test t on t.test_id = m.test_id WHERE m.user_id = u.user_id and t.subject_id = ?) as Avarage_marks from users u INNER JOIN assigned_pupil ap on ap.user_id = u.user_id INNER JOIN assign_teacher atc on atc.subject_id = ap.subject_id WHERE u.user_type = "student" and ap.subject_id = ? and atc.user_id = ?';
-        dbconfig.query(sqlQry, [subject_id, subject_id, userId], (err, results) => {
+        const sqlQry = 'SELECT *, (SELECT AVG(m.marks) from mark m INNER JOIN test t on t.test_id = m.test_id WHERE m.user_id = ap.user_id and t.subject_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where s.subject_id=?';
+        dbconfig.query(sqlQry, [subject_id, subject_id], (err, results) => {
             if (err) throw err;
             res.send(results); // results contains rows returned by server
         });
@@ -800,6 +755,11 @@ exports.upload_csv_grade_pupil = async (req, res) => {
                     if (err) throw err;
                     console.log(err || data);
                     console.log("record inserted for marks");
+                    console.log('csv test id only : ',csvData[0][0])
+                        let qry2 = `UPDATE test SET is_complete = ? where test_id = ?`;
+                        dbconfig.query(qry2, [1, csvData[0][0]], function (err, data) {
+                            if (err) throw err;
+                        });
                 });
             });
 
@@ -836,3 +796,4 @@ exports.deleteTest = async (req, res) => {
 }
 
 // --------------------------- end sumon teacher view----------------------
+
