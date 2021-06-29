@@ -8,7 +8,15 @@ exports.all_subject = (req, res) => {
         }
     );
 };
-
+exports.all_available_subject = (req, res) => {
+    class_id = req.params.class_id;
+    dbconfig.query(
+        'SELECT * FROM `subject` where class_id = ?', class_id,
+        function (err, results, fields) {
+            res.send(results); // results contains rows returned by server
+        }
+    );
+};
 exports.single_subject = (req,res)=>{
     const subjectId = req.params.subjectId;
     const userId = req.params.userId;//req.body.user_id;

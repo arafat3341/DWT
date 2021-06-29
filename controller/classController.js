@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 exports.all_class = (req,res) => {
     dbconfig.query(
-        'SELECT * FROM `class`',
+        'SELECT * FROM `class` where is_archived = 0',
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }
@@ -20,8 +20,7 @@ exports.all_class = (req,res) => {
 exports.create_class = (req,res)=>{
     const sql = "INSERT INTO class set ?";
     const data = {
-        class_name : req.body.class_name,
-        is_archived: req.body.is_archived,
+        class_name : req.body.class_name
     }
     dbconfig.query(sql, data, (err, result, next) => {
         if (err) {
@@ -31,7 +30,7 @@ exports.create_class = (req,res)=>{
     });
     console.log(data)
     //res.json(data)
-    res.redirect("/api/v1/classes/");
+    res.status(200).send('Class created successfully');
 }
 exports.edit_class = (req,res)=>{
     const classId = req.params.Id;
