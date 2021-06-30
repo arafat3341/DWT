@@ -110,9 +110,256 @@ exports.delete_class = (req,res)=>{
     res.redirect("/classes/");
 }
 
- exports.doSomething = async (req,res) => {
-    const classId = req.params.Id;
-    let response = await fetch('http://localhost:5000/api/v1/classes/'+ classId);
+exports.assign_student_a_class = async (req, res) => {
+    const userId = req.params.Id; // student id
+    let classID = req.params.class_id;
+    let data = {
+        class_id: classID,
+        user_id: userId // student id
+    }
+    console.log(userId)
+    let response = await fetch('http://localhost:5000/users/' + userId);
     let result = await response.json();
-    res.json(result[0].class_name)
+    switch (result[0].user_type) {
+        case 'student':
+            let assignedClass = 0;
+
+            dbconfig.query(
+                'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?', userId,
+                function (err, results, fields) {
+                    results.forEach(obj => {
+                        assignedClass = obj.class_id
+                    })
+                    console.log("assigned class id: " + assignedClass)
+                    if (assignedClass == 0) {
+                        dbconfig.query(
+                            'INSERT INTO assigned_pupil set ?', data,
+                            function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is Inserted");
+                            }
+                        );
+                        //res.redirect("/api/v1/classes/");
+                    }
+                    else {
+                        dbconfig.query(
+                            'DELETE FROM `assigned_pupil` where user_id = ?', userId,
+                            function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is deleted");
+                                dbconfig.query(
+                                    'INSERT INTO `assigned_pupil` set ?', data,
+                                    function (err, results, fields) {
+                                        if (err) throw err;
+                                        console.log("1 record is inserted");
+                                        let count2=0;
+                                        dbconfig.query(
+                                            'SELECT DISTINCT s.subject_id from subject s INNER JOIN test t on t.subject_id = s.subject_id INNER JOIN mark m on m.test_id = t.test_id WHERE m.user_id = ?', userId,
+                                            function (err, results, fields) {
+                                                if (err) throw err;
+                                                console.log("1 record is inserted");
+                                                results.forEach(obj => {
+                                                    count2 = count2 + 1;
+                                                })
+                                                console.log("counter: ",count2);
+                                                if(count2 > 0){
+                                                    results.forEach (obj => {
+                                                        dbconfig.query(
+                                                            'update subject set is_archived = ?  where subject_id = ?', [1,obj.subject_id],
+                                                            function (err, results, fields) {
+                                                                if (err) throw err;
+                                                            }
+                                                        );
+                                                    })
+                                                    console.log('successfully subject archived')
+                                                }
+                                                // else {
+                                                //     results.forEach (obj => {
+                                                //         dbconfig.query(
+                                                //             'delete from subject where subject_id = ?', obj.subject_id,
+                                                //             function (err, results, fields) {
+                                                //                 if (err) throw err;
+                                                //                 console.log("1 record is deleted");
+                                                //             }
+                                                //         );
+                                                // dbconfig.query(
+                                                    //             'delete from class where class_id = ?', classId,
+                                                    //             function (err, results, fields) {
+                                                    //                 if (err) throw err;
+                                                    //                 console.log("1 record is deleted");
+                                                    //             }
+                                                    //         );
+                                                //     })
+                                                // }
+                                            }
+                                        );
+                                    }
+                                );
+                            }
+                        );
+                        //res.redirect("/api/v1/classes/");
+                    }
+                }
+            );
+
+            break;
+        case 'admin':
+
+            break;
+        case 'teacher':
+
+            break;
+        default:
+            break;
+    }
+
+}
+
+exports.deassign_student_a_class = async (req, res) => {
+    const userId = req.params.Id;
+    let classID = req.params.class_id; //req.body.class_id
+    let data = {
+        class_id: classID,
+        user_id: userId
+    }
+    console.log(userId)
+    let response = await fetch('http://localhost:5000/users/' + userId);
+    let result = await response.json();
+    switch (result[0].user_type) {
+        case 'student':
+            let assignedClass = 0;
+
+            dbconfig.query(
+                'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?', userId,
+                function (err, results, fields) {
+                    results.forEach(obj => {
+                        assignedClass = obj.class_id
+                    })
+                    console.log("assigned class id: " + assignedClass)
+                    if (assignedClass == 0) {
+                        // dbconfig.query(
+                        //     'INSERT INTO assigned_pupil set ?', data,
+                        //     function (err, results, fields) {
+                        //         if (err) throw err;
+                        //         console.log("1 record is Inserted");
+                        //     }
+                        // );
+                        //res.redirect("/api/v1/classes/");
+                        console.log('he dosent assigned to a class before')
+                    }
+                    else {
+                        dbconfig.query(
+                            'DELETE FROM `assigned_pupil` where user_id = ? and class_id = ?', [userId,assignedClass],
+                            function (err, results, fields) {
+                                if (err) throw err;
+                                console.log("1 record is deleted");
+                                        dbconfig.query(
+                                            'SELECT DISTINCT s.subject_id from subject s INNER JOIN test t on t.subject_id = s.subject_id INNER JOIN mark m on m.test_id = t.test_id WHERE m.user_id = ?', userId,
+                                            function (err, results, fields) {
+                                                if (err) throw err;
+                                                console.log("1 record is inserted");
+                                                if(results.lenght > 0){
+                                                    results.forEach (obj => {
+                                                        dbconfig.query(
+                                                            'update subject set is_archived = ?  where subject_id = ?', [1,obj.subject_id],
+                                                            function (err, results, fields) {
+                                                                if (err) throw err;
+                                                            }
+                                                        );
+                                                    })
+                                                    console.log('successfully subject archived')
+                                                }
+                                                // else {
+                                                //     results.forEach (obj => {
+                                                //         dbconfig.query(
+                                                //             'delete from subject where subject_id = ?', obj.subject_id,
+                                                //             function (err, results, fields) {
+                                                //                 if (err) throw err;
+                                                //                 console.log("1 record is deleted");
+                                                //             }
+                                                //         );
+                                                //     })
+                                                //     dbconfig.query(
+                                                //         'delete from class where class_id = ?', classID,
+                                                //         function (err, results, fields) {
+                                                //             if (err) throw err;
+                                                //             console.log("1 record is deleted");
+                                                //         }
+                                                //     );
+                                                // }
+                                            }
+                                        );
+                                    // }
+                            }
+                        );
+                        //res.redirect("/api/v1/classes/");
+                    }
+                }
+            );
+
+            break;
+        case 'admin':
+
+            break;
+        case 'teacher':
+
+            break;
+        default:
+            break;
+    }
+
+}
+exports.list_of_assign_student = async (req, res) => {
+    const userId = req.params.Id;
+    let incoming_id = 0;
+    console.log(userId)
+    let response = await fetch('http://localhost:5000/users/' + userId);
+    let result = await response.json();
+
+    result.forEach(obj => {
+        incoming_id = obj.user_id;
+    })
+
+    // if (incoming_id == userId) {
+        // switch (result[0].user_type) {
+            // case 'admin':
+            //     res.json('admin')
+            //     break;
+            // case 'student':
+                //res.json('student')
+                //'SELECT u.user_id FROM assigned_pupil ap INNER join users u on ap.user_id = u.user_id WHERE u.user_id = ?'
+                dbconfig.query(
+                    'SELECT * FROM assigned_pupil ap INNER join class c on ap.class_id = c.class_id WHERE ap.user_id = ?', userId,
+                    function (err, results, fields) {
+                        res.send(results); // results contains rows returned by server
+                    }
+                );
+            //     break;
+            // case 'teacher':
+            //     res.json('teacher')
+            //     break;
+        // }
+    // }
+    // else {
+    //     res.json('not matched')
+    // }
+}
+exports.list_of_assign_available_student = async (req, res) => {
+    const userId = req.params.Id;
+                let assignedClass = 0;
+                dbconfig.query(
+                    'SELECT c.class_id from class c INNER join assigned_pupil ap on c.class_id = ap.class_id where ap.user_id = ?', userId,
+                    function (err, results, fields) {
+                        results.forEach(obj => {
+                            assignedClass = obj.class_id
+                        })
+                        console.log(assignedClass)
+                        dbconfig.query(
+                            'SELECT * from class where not class_id = ?', assignedClass,
+                            function (err, results, fields) {
+                                res.send(results)
+                            }
+                        );
+                    }
+                );
 }

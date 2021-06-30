@@ -13,7 +13,8 @@ router.post("/classes", classController.create_class)
 router.get("/classes/:Id", classController.edit_class)
 router.put("/classes/:Id", classController.update_class)
 router.delete("/classes/:Id", classController.delete_class)
-router.post("/classes/:Id/new", classController.doSomething)
+router.post("/classes/studentAssign/:Id/:class_id", classController.assign_student_a_class)
+router.post("/classes/studentDeassign/:Id/:class_id", classController.deassign_student_a_class)
 
 
 module.exports = router;
