@@ -11,7 +11,7 @@ const auth = require('./auth')
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.get('/home',auth.checkUser,res=>res.json(token))
+
 app.use(auth.verify)
 app.post('/home',(req,res)=>res.json('Home'))
 app.use('', userRouter);

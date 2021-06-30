@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const fetch = require("node-fetch");
 var jwt = require('jsonwebtoken');
 exports.verify = function(req,res,next){
-    const access = req.headers["authorization"]
+    const access = req.headers["auth"]
     if(typeof access !== 'undefined') {
         req.token = access
         next()
@@ -12,10 +12,4 @@ exports.verify = function(req,res,next){
     else {
         res.sendStatus(403)
     }
-}
-exports.checkUser = (req,res,next) => {
-    var token = jwt.sign({ foo: 'bar' }, 'shhhhh');
-    res.json({
-        token: token
-    })
 }

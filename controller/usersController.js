@@ -6,16 +6,15 @@ const fetch = require("node-fetch");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-const fastcsv = require("fast-csv")
+const fastcsv = require("fast-csv");
+require('dotenv').config()
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 exports.all_users = (req, res) => {
-    var decoded = jwt.verify(req.token, 'shhhhh');
-    console.log(decoded.foo)
-    if('bar' === decoded.foo){
+    if(process.env.my_secret_key == req.token){
         dbconfig.query(
             'SELECT * FROM `users`',
             function (err, results, fields) {
