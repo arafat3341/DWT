@@ -7,8 +7,8 @@ const subjectController = require("../controller/subjectController");
 
 app.use(express.urlencoded({ extended: true }));
 
-router.get("/subjects/:Id", subjectController.list_all_subject);
-router.get("/subjects/:class_id", subjectController.all_available_subject);
+router.get("/subjects/:user_Id", subjectController.list_all_subject);
+
 router.get("/subjects/details/:userId/:subjectId", subjectController.single_subject);
 router.delete("/subjects/:subject_id", subjectController.deleteSubject);
 router.post("/subjects/teacherAssign/:subject_id", subjectController.assign_teacher);

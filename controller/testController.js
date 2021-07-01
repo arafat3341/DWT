@@ -153,7 +153,7 @@ exports.deleteTest = async (req, res) => {
 }
 exports.list_student_test = async (req, res) => {
     const userId = req.params.Id;
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
     const test_id = req.params.test_id;

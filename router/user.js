@@ -7,10 +7,9 @@ const userController = require("../controller/usersController");
 app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-router.get("/users/login", userController.getLogin);
+//router.get("/users/login", userController.getLogin);
 router.post("/users/login", userController.login);
 router.post("/users/register", userController.addUser);
-router.post("/users", userController.addUser);
 router.get("/users/show/:Id", userController.edit_user)
 router.put("/users/:Id", userController.update_user)
 router.delete("/users/:Id", userController.delete_user)

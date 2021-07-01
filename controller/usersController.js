@@ -8,13 +8,15 @@ const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const fastcsv = require("fast-csv");
 require('dotenv').config()
+const http = require('http');
+const querystring = require('querystring')
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 exports.all_users = (req, res) => {
-    if(process.env.my_secret_key == req.token){
+    //if(process.env.my_secret_key == req.token){
         dbconfig.query(
             'SELECT * FROM `users`',
             function (err, results, fields) {
@@ -22,22 +24,24 @@ exports.all_users = (req, res) => {
                 res.send(results); // results contains rows returned by server
             }
         );
-    }
-    else{
-        res.status(401).send('401 Unauthorized')
-    }
+    // }
+    // else{
+    //     res.status(401).send('401 Unauthorized')
+    // }
 };
-let getUserId;
-exports.getLogin = (req, res,) => {
-    //res.json("user id:" + getUserId ) 
-    //if (err) res.status(401).send('401 Unauthorized');
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write(JSON.stringify(getUserId));
+
+// exports.getLogin = (req, res,) => {
+//     //res.json("user id:" + getUserId ) 
+//     //if (err) res.status(401).send('401 Unauthorized');
+//     res.writeHead(200, { 'Content-Type': 'application/json' });
+//     res.write(JSON.stringify(getUserId));
     
-    //getUserId = 0;
-    res.end();
-}
+//     //getUserId = 0;
+//     res.end();
+// }
+
 exports.login = (req,res) => {
+    let getUserId;
     const sql = "select * from users where user_name = ?";
     const user_name = req.body.user_name;
     const pass = req.body.password;
@@ -47,21 +51,42 @@ exports.login = (req,res) => {
         if (err) throw err;
         if (result.length != 0) {
             getUserId = result[0].user_id;
+            const token = jwt.sign({ user: user_name, password: pass }, process.env.secret_key);
             const match = await bcrypt.compare(pass, result[0].password);
             if (match) {
-                //res.json(result)
                 switch (result[0].user_type) {
                 case 'admin':
                     console.log('logged in as a admin');
-                    res.redirect('http://localhost/api/admin.php')
+                    const admin = {
+                        user: getUserId,
+                        type: 'admin',
+                        token: token
+                    }
+                    //res.json(admin)
+                    //res.write(JSON.stringify(admin))
+                    //res.status(200).send();
+                    //res.end()
+                    res.redirect('http://localhost/api/admin.php?id='+getUserId)
                     break;
                 case 'teacher':
                     console.log('logged in as a teacher');
-                    res.redirect('http://localhost/api/teacher.php')
+                    // const teacher = {
+                    //     user: getUserId,
+                    //     type: 'teacher',
+                    //     token: token
+                    // }
+                    // res.status(200).send(teacher);
+                    res.redirect('http://localhost/api/teacher.php?id='+getUserId)
                     break;
                 case 'student':
                     console.log('logged in as a student');
-                    res.redirect('http://localhost/api/student.php')
+                    // const student = {
+                    //     user: getUserId,
+                    //     type: 'student',
+                    //     token: token
+                    // }
+                    // res.status(200).send(student);
+                    res.redirect('http://localhost/api/student.php?id='+getUserId)
                     break;
                 default:
                     res.json('auth failed')
@@ -76,6 +101,7 @@ exports.login = (req,res) => {
 }
 
 exports.addUser = async (req, res) => {
+    console.log(req.body.user_id);
     const sql = "INSERT INTO users set ?";
     const hash2 = await bcrypt.hash(req.body.password, 10);
     const data = {
@@ -92,7 +118,7 @@ exports.addUser = async (req, res) => {
     });
     console.log(data)
     //res.json(data)
-    res.redirect("/users");
+    res.redirect('http://localhost/api/admin.php?id='+req.body.user_id);
 }
 exports.edit_user = (req, res) => {
     const userId = req.params.Id;
@@ -104,6 +130,8 @@ exports.edit_user = (req, res) => {
     );
 }
 exports.update_user = async (req, res) => {
+    const admin_id = req.body.admin_id;
+    console.log(admin_id)
     const userId = req.params.Id;
     const user_name = req.body.user_name;
     const password = await bcrypt.hash(req.body.password, 10);
@@ -123,7 +151,7 @@ exports.update_user = async (req, res) => {
                 if (err) throw err;
                 console.log("1 record updated");
             });
-            res.redirect("/api/v1.1/all_users");
+            res.send(JSON.stringify("ok"));
             break;
         case 'teacher':
             const sql2 = 'update users set user_name = ?, password = ?, first_name = ?, last_name = ?  where user_id = ?'
@@ -131,7 +159,7 @@ exports.update_user = async (req, res) => {
                 if (err) throw err;
                 console.log("1 record updated");
             });
-            res.redirect("/api/v1.1/all_users");
+            //res.redirect("/api/v1.1/all_users");
             break;
         case 'admin':
             const sql3 = 'update users set user_name = ?, password = ?, first_name = ?, last_name = ?, user_type = ?  where user_id = ?'
@@ -139,7 +167,7 @@ exports.update_user = async (req, res) => {
                 if (err) throw err;
                 console.log("1 record updated");
             });
-            res.redirect("/api/v1.1/all_users");
+            //res.redirect("/api/v1.1/all_users");
             break;
         default:
             break;
@@ -170,12 +198,12 @@ exports.delete_user = (req, res) => {
                                 function (err, results, fields) {
                                     if (err) throw err;
                                     console.log("1 record is deleted");
+                                    res.status(200).send("Teacher deleted successfully");
                                 }
                             );
-                            res.redirect("/users");
                         }
                         else {
-                            res.sendStatus(401)
+                            res.status(403).send("Teacher is already assigned to at least one subject");
                         }
                     }
                 );
@@ -205,14 +233,18 @@ exports.delete_user = (req, res) => {
             }
             else {
                 if (err) res.status;
-                //console.log(res.status(err.status).send(err));
-                res.status(404).send('404 Not Found')
-                
+                dbconfig.query(
+                    'DELETE FROM `users` WHERE user_id = ?', userId,
+                    function (err, results, fields) {
+                        if (err) res.err;
+                        res.status(200).send("Deleted successfully")
+                    }
+                );
             }
         }
     );
 }
-exports.student_view = async (req, res) => {
+exports.student_view = (req, res) => {
     const userId = req.params.Id;
         dbconfig.query(
             'SELECT * from assigned_pupil ap INNER JOIN class c on c.class_id = ap.class_id INNER JOIN subject s on s.class_id=c.class_id WHERE ap.user_id = ?', userId,
@@ -282,7 +314,7 @@ exports.list_assign_subject = async (req, res) => {
 
 exports.list_student_subject = async (req, res) => {
     const userId = req.params.Id; // teacher id
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
     let subject_id = req.params.subject_id;

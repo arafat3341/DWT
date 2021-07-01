@@ -1,15 +1,7 @@
 const dbconfig = require("../config");
 const fetch = require("node-fetch");
 
-exports.all_available_subject = (req, res) => {
-    class_id = req.params.class_id;
-    dbconfig.query(
-        'SELECT * FROM `subject` where class_id = ?', class_id,
-        function (err, results, fields) {
-            res.send(results); // results contains rows returned by server
-        }
-    );
-};
+
 exports.single_subject = (req,res)=>{
     const subjectId = req.params.subjectId;
     const userId = req.params.userId;//req.body.user_id;
@@ -21,8 +13,6 @@ exports.single_subject = (req,res)=>{
         }
     );
 }
-
-
 
 exports.deleteSubject = async (req, res) => {
     // const userId = req.params.Id;
@@ -64,8 +54,8 @@ exports.assign_teacher = async (req,res) => {
     });
 }
 exports.list_all_subject = async (req, res) => {
-    const userId = req.params.Id;
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    const userId = req.params.user_Id;
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
     if (result[0].user_type == 'admin') {
@@ -82,6 +72,7 @@ exports.list_all_subject = async (req, res) => {
 }
 exports.addEditSubject = async (req, res) => {
     const operation_type = req.params.operation_type;
+    const user_id= req.body.user_id;
         let lastInsertedID = 0;
         switch (operation_type) {
             case 'addSubject':
@@ -101,6 +92,7 @@ exports.addEditSubject = async (req, res) => {
                         dbconfig.query(qry, [req.body.teacher_id, lastInsertedID, new Date()], function (err, data) {
                             if (err) throw err;
                             console.log("1 record inserted for assign_teacher");
+                            res.redirect('http://localhost/api/subject.php?class_id='+req.body.class_id+'&user_id='+user_id)
                         });
                     }
                     else {
@@ -176,7 +168,7 @@ exports.archiveSubject = async (req, res) => {
 exports.list_test_subject = async (req, res) => {
     const userId = req.params.Id;
     const subjectId = req.params.subject_id;
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
 
