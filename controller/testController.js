@@ -104,7 +104,7 @@ exports.upload_csv_grade_pupil = async (req, res) => {
     let result = await response.json();
 
     if (result[0].user_type == 'teacher') {
-        let filepath = './upload/'+req.params.file;//'./upload/markcsv.csv'
+        let filepath = './upload/' + req.body.file;//'./upload/markcsv.csv'
         let filename = filepath;
         //get file
         let stream = fs.createReadStream(filename);
@@ -134,6 +134,7 @@ exports.upload_csv_grade_pupil = async (req, res) => {
 
         stream.pipe(csvStream);
     }
+    res.status(200).send('Marks successfully updated')
 }
 
 exports.deleteTest = async (req, res) => {
