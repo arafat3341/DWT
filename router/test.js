@@ -14,7 +14,7 @@ router.get("/tests/details/:Id/:test_id", testController.list_student_test);
 router.post("/tests/:subject_id", testController.add_test);
 router.get("/tests/:test_id", testController.edit_test);
 router.put("/tests/:Id", testController.update_test);
-router.post("/tests/importGrades/:Id", testController.upload_csv_grade_pupil);
+router.get("/tests/importGrades/:Id/:file", testController.upload_csv_grade_pupil);
 router.get("/tests/student_grades/:Id/:test_id", testController.list_student_test_grade);
 router.put("/tests/grades/:Id", testController.update_grades);
 

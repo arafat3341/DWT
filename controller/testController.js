@@ -1,5 +1,7 @@
 const dbconfig = require("../config");
 const fetch = require("node-fetch");
+const fs = require('fs');
+const fastcsv = require("fast-csv");
 
 exports.all_test = (req, res) => {
     dbconfig.query(
@@ -98,11 +100,11 @@ exports.update_test = async (req, res) => {
 exports.upload_csv_grade_pupil = async (req, res) => {
     //add validation for file upload first and have to be there a necessary csv file called 'markcsv.csv'
     const userId = req.params.Id;
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
     if (result[0].user_type == 'teacher') {
-        let filepath = './upload/markcsv.csv'
+        let filepath = './upload/'+req.params.file;//'./upload/markcsv.csv'
         let filename = filepath;
         //get file
         let stream = fs.createReadStream(filename);
