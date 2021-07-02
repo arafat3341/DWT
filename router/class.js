@@ -16,6 +16,8 @@ router.delete("/classes/:Id", classController.delete_class)
 router.post("/classes/studentAssign/:Id/:class_id", classController.assign_student_a_class)
 router.post("/classes/studentDeassign/:Id/:class_id", classController.deassign_student_a_class)
 router.get("/classes/subjects/:class_id", classController.all_available_subject);
+router.get("/classes/assign/:class_id", classController.list_of_assign_available_student)
+router.get("/classes/deassign/:class_id", classController.list_of_assigned_student)
 
 
 module.exports = router;

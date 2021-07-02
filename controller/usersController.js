@@ -144,10 +144,10 @@ exports.update_user = async (req, res) => {
     const user_type = req.body.user_type;
     console.log("userId" + userId);
     console.log("user_name" + user_name);
-    console.log("first_name"+ first_name);
-    console.log("last_name"+last_name);
+    console.log("first_name" + first_name);
+    console.log("last_name" + last_name);
     console.log("1 record updated");
-    let response = await fetch('http://localhost:5000/users/show/'+userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
     let userType;
     let store_passward
@@ -332,7 +332,7 @@ exports.list_student_subject = async (req, res) => {
     let subject_id = req.params.subject_id;
 
     if (result[0].user_type == 'teacher') {
-        const sqlQry = 'SELECT *, (SELECT AVG(m.marks) from mark m INNER JOIN test t on t.test_id = m.test_id WHERE m.user_id = ap.user_id and t.subject_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where s.subject_id=?';
+        const sqlQry = 'SELECT *, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id WHERE m.user_id = ap.user_id and t.subject_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where s.subject_id=?';
         dbconfig.query(sqlQry, [subject_id, subject_id], (err, results) => {
             if (err) throw err;
             res.send(results); // results contains rows returned by server
@@ -345,7 +345,7 @@ exports.list_student_subject = async (req, res) => {
 exports.get_all_subject_grades = (req, res) => {
     const userId = req.params.Id;
     dbconfig.query(
-        'SELECT s.subject_id, (SELECT AVG(m.marks) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where ap.user_id=?', [userId, userId],
+        'SELECT s.subject_id, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where ap.user_id=?', [userId, userId],
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }

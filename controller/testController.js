@@ -66,7 +66,7 @@ exports.add_test = async (req, res) => {
     });
     //}
 }
-exports.edit_test = (req,res)=>{
+exports.edit_test = (req, res) => {
     const testId = req.params.test_id;
     dbconfig.query(
         'SELECT * FROM `test` where test_id = ?', testId,
@@ -208,7 +208,7 @@ exports.list_student_test_grade = async (req, res) => {
 
     if (result[0].user_type == 'student') {
         dbconfig.query(
-            'Select * from mark where user_id = ? and test_id = ?', [userId,test_id],
+            'Select * from mark where user_id = ? and test_id = ?', [userId, test_id],
             function (err, results, fields) {
                 res.send(results); // results contains rows returned by server
             }
@@ -231,12 +231,12 @@ exports.update_grades = async (req, res) => {
         let marks = req.body.marks;
         let user_id = userId;
         let test_id = req.body.test_id;
-       // let subject_id = req.body.subject_id;
+        // let subject_id = req.body.subject_id;
 
         dbconfig.query(sqlQry, [marks, user_id, test_id], (err, result) => {
             if (err) throw err;
             console.log("1 record updated");
-            console.log(user_id);console.log(test_id);
+            console.log(user_id); console.log(test_id);
             res.send(JSON.stringify("ok"));
         });
     }
