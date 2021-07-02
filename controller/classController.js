@@ -18,6 +18,7 @@ exports.all_class = (req,res) => {
     );
 };
 exports.create_class = (req,res)=>{
+    console.log(req.body.user_id)
     dbconfig.query(
         'SELECT count(*) AS classCount FROM class WHERE class_name = ?', req.body.class_name,
         function (err, results, fields) {
@@ -25,7 +26,8 @@ exports.create_class = (req,res)=>{
             console.log(results[0].classCount)
             if (Number(results[0].classCount) > 0) {
                 console.log("This subject has records");
-                res.status(409).send('409 CONFLICT');
+                //res.status(409).send('409 CONFLICT');
+                res.redirect('http://localhost/api/admin.php?id='+req.body.user_id);
             } else {
                 const sql = "INSERT INTO class set ?";
                 const data = {
@@ -38,8 +40,8 @@ exports.create_class = (req,res)=>{
                     console.log("1 record inserted");
                 });
                 console.log(data)
-                //res.json(data)
-                res.status(200).send('Class created successfully');
+                res.redirect('http://localhost/api/admin.php?id='+req.body.user_id);
+                //res.status(200).send('Class created successfully');
                         }
         }
     );
@@ -116,6 +118,7 @@ exports.delete_class = (req,res)=>{
                                                     'delete from subject where subject_id = ?', obj, function (err, results, fields) {
                                                         if (err) throw err;
                                                         console.log("1 record is updated");
+                                                        
                                                     }
                                                 )
                                                 console.log("subject id : "+obj);
@@ -125,6 +128,7 @@ exports.delete_class = (req,res)=>{
                                                     'update subject set is_archived = ? where subject_id = ?', [1, obj], function (err, results, fields) {
                                                         if (err) throw err;
                                                         console.log("1 record is updated");
+                                                        //res.status(200).send("Teacher deleted successfully");
                                                     }
                                                 )
                                                 console.log("subject id : "+obj);
@@ -132,7 +136,7 @@ exports.delete_class = (req,res)=>{
                                         }
                                     )
                                 });
-                                
+                                res.status(200).send("Class deleted successfully");
                                 console.log(subjectId);
                             }
                         )
@@ -140,7 +144,6 @@ exports.delete_class = (req,res)=>{
                 )
         }
     );
-    res.redirect("/classes/");
 }
 
 exports.assign_student_a_class = async (req, res) => {
@@ -204,6 +207,7 @@ exports.assign_student_a_class = async (req, res) => {
                                                             }
                                                         );
                                                     })
+                                                    //res.status(200).send('Assigned Pupil successfully')
                                                     console.log('successfully subject archived')
                                                 }
                                                 // else {
@@ -224,6 +228,7 @@ exports.assign_student_a_class = async (req, res) => {
                                                     //         );
                                                 //     })
                                                 // }
+                                                res.status(200).send('Assigned Pupil successfully')
                                             }
                                         );
                                     }
@@ -326,7 +331,7 @@ exports.deassign_student_a_class = async (req, res) => {
                             }
                         );
                         //res.redirect("/api/v1/classes/");
-                    }
+                    }res.status(200).send('Dessigned Pupil successfully')
                 }
             );
 
