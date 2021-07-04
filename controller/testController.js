@@ -100,6 +100,8 @@ exports.update_test = async (req, res) => {
 exports.upload_csv_grade_pupil = async (req, res) => {
     //add validation for file upload first and have to be there a necessary csv file called 'markcsv.csv'
     const userId = req.params.Id;
+    const test_id = req.body.test_id;
+    console.log(test_id)
     let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
@@ -109,15 +111,30 @@ exports.upload_csv_grade_pupil = async (req, res) => {
         //get file
         let stream = fs.createReadStream(filename);
         let csvData = [];
+        let test = [];
+
         //parse using fast-csv module; see in top about fastcsv require
         let csvStream = fastcsv.parse()
             .on("data", function (data) {
                 csvData.push(data);
+                //test_id.push(csvData[0][0])
+
             })
             .on("end", function () {
                 // remove the first line: header
+                // csvData.unshift()
+                for (var i = 0; i < csvData.length; i++) {
+                    // test1[i] = [];
+                    // test1[i][0] = csvData[i][0];
+                    // test1[i][1] = top10[i][1];
+                    csvData[i][0] = test_id
+                    console.log("[0][1]" + csvData[i][0])
+                    // Maybe do something similar with test2
+                }
                 csvData.shift();
 
+
+                console.log('csv: ', csvData)
                 // insert csvdata to database
                 let qry = `INSERT INTO mark (test_id, user_id, marks) VALUES ?`;
                 dbconfig.query(qry, [csvData], function (err, data) {
@@ -128,6 +145,7 @@ exports.upload_csv_grade_pupil = async (req, res) => {
                     let qry2 = `UPDATE test SET is_complete = ? where test_id = ?`;
                     dbconfig.query(qry2, [1, csvData[0][0]], function (err, data) {
                         if (err) throw err;
+                        console.log(data)
                     });
                 });
             });

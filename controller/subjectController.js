@@ -137,7 +137,7 @@ exports.showSubjectInfo = async (req, res) => {
     const subjectId = req.params.subject_id;
     console.log(userId)
     console.log(subjectId)
-    let response = await fetch('http://localhost:5000/users/' + userId);
+    let response = await fetch('http://localhost:5000/users/show/' + userId);
     let result = await response.json();
 
     if (result[0].user_type == 'admin') {

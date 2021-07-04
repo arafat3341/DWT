@@ -11,10 +11,7 @@ router.get("/subjects/:user_Id", subjectController.list_all_subject);
 router.get("/subjects/show/:subject_id", subjectController.single_subject_name)
 router.get("/subjects/details/:userId/:subjectId", subjectController.single_subject);
 router.delete("/subjects/:subject_id", subjectController.deleteSubject);
-router.post("/subjects/teacherAssign/:subject_id", subjectController.assign_teacher);
-//router.get("/api/v1/all_subjects", subjectController.all_subject);
-
-//router.post("/users/add_subject/:Id", subjectController.addEditSubject);
+router.post("/subjects/teacherAssign/:subject_id", subjectController.assign_teacher);//optional
 router.post("/subjects/addEditSubject/:operation_type", subjectController.addEditSubject); // add & edit documentation separately
 router.post("/subjects/archive/:subject_id", subjectController.archiveSubject);
 router.get("/subjects/show/:Id/:subject_id", subjectController.showSubjectInfo);
