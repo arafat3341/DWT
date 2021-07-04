@@ -210,15 +210,24 @@ exports.delete_user = (req, res) => {
                         // results.forEach(obj => {
                         //     userType = obj.user_type
                         // })
-                        if (results[0] == null) {
+                        console.log(results[0])
+                        if (results[0] == null || results[0] == 'undefined') {
                             dbconfig.query(
-                                'delete FROM `users` where user_id = ?', userId,
+                                'delete FROM `assign_teacher` where user_id = ?', userId,
                                 function (err, results, fields) {
                                     if (err) throw err;
                                     console.log("1 record is deleted");
-                                    res.status(200).send("Teacher deleted successfully");
+                                    dbconfig.query(
+                                        'delete FROM `users` where user_id = ?', userId,
+                                        function (err, results, fields) {
+                                            if (err) throw err;
+                                            console.log("1 record is deleted");
+                                            res.status(200).send("Teacher deleted successfully");
+                                        }
+                                    );
                                 }
                             );
+
                         } else {
                             res.status(403).send("Teacher is already assigned to at least one subject");
                         }
@@ -345,7 +354,7 @@ exports.list_student_subject = async (req, res) => {
 exports.get_all_subject_grades = (req, res) => {
     const userId = req.params.Id;
     dbconfig.query(
-        'SELECT s.subject_id, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade FROM subject s inner join class c on c.class_id = s.class_id inner join assigned_pupil ap on ap.class_id=c.class_id where ap.user_id=?', [userId, userId],
+        'SELECT DISTINCT s.subject_id, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade from mark m INNER JOIN subject s INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?', [userId, userId],
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }
