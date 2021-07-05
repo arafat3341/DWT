@@ -268,7 +268,7 @@ exports.delete_user = (req, res) => {
 exports.student_view = (req, res) => {
     const userId = req.params.Id;
     dbconfig.query(
-        'SELECT * from assigned_pupil ap INNER JOIN class c on c.class_id = ap.class_id INNER JOIN subject s on s.class_id=c.class_id WHERE ap.user_id = ?', userId,
+        'SELECT s.subject_id,s.subject_name,u.first_name,u.last_name,s.is_archived from assigned_pupil ap INNER JOIN class c on c.class_id = ap.class_id INNER JOIN subject s on s.class_id=c.class_id INNER JOIN assign_teacher atc on atc.subject_id=s.subject_id INNER JOIN users u on u.user_id = atc.user_id WHERE ap.user_id = ?', userId,
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }
@@ -322,7 +322,7 @@ exports.list_assign_subject = async (req, res) => {
     console.log(userId)
 
     if (result[0].user_type == 'teacher') {
-        const sqlQry = 'select * from assign_teacher atc INNER JOIN subject s on s.subject_id = atc.subject_id where atc.user_id = ?';
+        const sqlQry = 'select * from assign_teacher atc INNER JOIN subject s on s.subject_id = atc.subject_id INNER JOIN class c on c.class_id=s.class_id where atc.user_id = ?';
         dbconfig.query(sqlQry, userId, (err, results) => {
             if (err) throw err;
             res.send(results); // results contains rows returned by server
@@ -354,7 +354,7 @@ exports.list_student_subject = async (req, res) => {
 exports.get_all_subject_grades = (req, res) => {
     const userId = req.params.Id;
     dbconfig.query(
-        'SELECT DISTINCT s.subject_id, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade from mark m INNER JOIN subject s INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?', [userId, userId],
+        'SELECT DISTINCT s.subject_id,s.subject_name, (SELECT cast(AVG(m.marks) as decimal(10,2)) from mark m INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?) as AverageGrade from mark m INNER JOIN subject s INNER JOIN test t on t.test_id = m.test_id where t.subject_id = s.subject_id and m.user_id = ?', [userId, userId],
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }

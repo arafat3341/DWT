@@ -352,7 +352,7 @@ exports.deassign_student_a_class = async (req, res) => {
 exports.list_of_assigned_student = async (req, res) => {
     const class_id = req.params.class_id;
     dbconfig.query(
-        'SELECT * FROM assigned_pupil ap INNER JOIN users u on u.user_id=ap.user_id WHERE ap.class_id = ?', class_id,
+        'SELECT * FROM class c inner join assigned_pupil ap on c.class_id=ap.class_id INNER JOIN users u on u.user_id=ap.user_id WHERE ap.class_id = ?', class_id,
         function (err, results, fields) {
             res.send(results); // results contains rows returned by server
         }
@@ -366,7 +366,6 @@ exports.list_of_assign_available_student = async (req, res) => {
             res.send(results); // results contains rows returned by server
         }
     );
-
 }
 
 exports.all_available_subject = (req, res) => {
