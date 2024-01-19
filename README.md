@@ -4,8 +4,8 @@ project is targeted for the advanced online student grading system managed by sc
 a simple grading system is developed where teachers and students can find information about classes, 
 subjects, and test grades. There were various other functionalities implemented according to the 
 project requirements.
-## Primary Requirements
 
+## Primary Requirements
 The primary requirement of the project is to build a system where there must be a local database, 
 which is communicated through API by the use of a backend. There should also be a frontend just to 
 provide a user interface to the end users. The front end never communicates directly with the 
@@ -30,8 +30,9 @@ other two is for teachers and students. According to the requirements of the pro
 communicates with the database to run the system
 ![image](https://github.com/ArafatTheGoldenBoy/Bright-Star-Grading-System/assets/8183410/c7534954-5edc-4e42-b444-32efb5786455)<br>
 <p align="center">Table-1: UI – Functionalities</p>
+
 ## Project operations
 This project is mainly consisting of three user interfaces. The main interface is for the admin and the other two is for teachers and students. According to the requirements of the project, all the data were stored in a database and no additional storage were used. 
+
 ## Conclusion
 This project “Bright Star Grading System” is an API based project where most of the functional logic was implemented in the backend which was communicated by an API with the database. Working on this project was entirely a new experience for me. Implementing logics and fetching them using API to cast on the interface without writing any logic in the frontend was a bit challenging at start. But day by day, I learned, and things got easier. This project was cordially created to help the cause to create a simple grading system for schools.
-
