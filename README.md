@@ -11,7 +11,7 @@ which is communicated through API by the use of a backend. There should also be 
 provide a user interface to the end users. The front end never communicates directly with the 
 database
 ![1](https://github.com/ArafatTheGoldenBoy/Bright-Star-Grading-System/assets/8183410/ccea85e5-9b3c-4ecc-b140-8b1ed2724166)<br>
-:---:Figure-1: Structure of whole project
+<p align="center">Figure-1: Structure of whole project</p>
 
 ## Relational Schema
 Relational schema denotes to the meta-data that describes the erection of data within a convinced 
@@ -19,7 +19,7 @@ domain. A relational schema for a database is the framework of how data is prear
 stipulates which columns in which tables comprise orientations to data in other tables, frequently by 
 comprising primary keys from other table so that rows can be easily joined.
 ![image](https://github.com/ArafatTheGoldenBoy/Bright-Star-Grading-System/assets/8183410/bdfecb6e-4ce7-4491-b43a-fd611fa4432d)<br>
-:---:Figure-2: Relational Schema
+<p align="center">Figure-2: Relational Schema</p>
 Relational schema has a very important role for developing the project. First we did this relational schema even before starting to write program. Because relational schema helps us to understand how the tables of the database are connected to each other using foreign key and primary key.
 
 ## Functionalities
@@ -29,7 +29,7 @@ other two is for teachers and students. According to the requirements of the pro
 - The frontend communicates with the backend using API routes and finally the backend 
 communicates with the database to run the system
 ![image](https://github.com/ArafatTheGoldenBoy/Bright-Star-Grading-System/assets/8183410/c7534954-5edc-4e42-b444-32efb5786455)<br>
-
+<p align="center">Table-1: UI – Functionalities</p>
 ## Project operations
 This project is mainly consisting of three user interfaces. The main interface is for the admin and the other two is for teachers and students. According to the requirements of the project, all the data were stored in a database and no additional storage were used. 
 ## Conclusion
