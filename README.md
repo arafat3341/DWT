@@ -1,5 +1,5 @@
 # Bright Star Grading System
-Bright Star Grading System is a projectfor the final exam of “Datenbanken und Web-Techniken”. This 
+Bright Star Grading System is a project for the final exam of “Datenbanken und Web-Techniken”. This 
 project is targeted for the advanced online student grading system managed by school. In this project, 
 a simple grading system is developed where teachers and students can find information about classes, 
 subjects, and test grades. There were various other functionalities implemented according to the 
